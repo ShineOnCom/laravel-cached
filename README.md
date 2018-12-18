@@ -18,6 +18,9 @@ $u = cached(User::class, 1, $decorate = true)   // More\Laravel\Cached\Support\C
 
 // A specific decorator to be returned
 $u = cached(User::class, 1, Dashboard::class);  // App\Presenters\Dashboard
+
+// A specific decorator to be returned
+$u = cachedOrFail(User::class, 200000, Dashboard::class);  // throws ModelNotFoundException
 ```
 
 ### Usage with the macro
@@ -25,16 +28,24 @@ $u = cached(User::class, 1, Dashboard::class);  // App\Presenters\Dashboard
 > Examples
 
 ```
-// Fetch a mdoel from the cache
-$user = User::findCached($id = 1);              // App\User
+// Find a model from the cache / db
+$user = User::cached($id = 1);                  // App\User
 
-// The default decorated class or 
-// CACHE_DECORATOR specified on model.
-$u = User::findCached($id = 1)->decorate()      // More\Laravel\Cached\Support\CacheDecorator
+// Find or fail from the cache /db 
+$user = User::cachedOrFail($id = 200000);       // throws ModelNotFoundException
+
+// Fail with exception or decorate.
+$u = User::cachedOrFail($id = 1)->decorate()    // More\Laravel\Cached\Support\CacheDecorator
+
+// Param can be used when model may not be found
+$u = User::cached($id = 1, $decorate = true)    // More\Laravel\Cached\Support\CacheDecorator
 
 // A specific decorator to be returned
-$u = User::findCached($id = 1)                  // App\Presenters\Dashboard
+$u = User::cachedOrFail($id = 1)                // App\Presenters\Dashboard
     ->decorate(Dashboard::class);
+    
+// A specific decorator to be returned
+$u = User::cached($id = 1, Dashboard::class);   // App\Presenters\Dashboard
 ```
 
 ## More on Decorators
