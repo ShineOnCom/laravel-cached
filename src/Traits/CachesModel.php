@@ -48,9 +48,9 @@ trait CachesModel
     protected $model_version_accessor = 'updated_at';
 
     /**
-     * @return Model
+     * @return Model|null
      */
-    public function getModel(): Model
+    public function getModel(): ?Model
     {
         return $this->model;
     }
