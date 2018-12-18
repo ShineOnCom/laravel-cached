@@ -2,11 +2,23 @@
 
 namespace More\Laravel\Cached\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
- * Class Stub
+ * Class CacheStub
  */
-class CacheStub
+class CacheStub extends Model
 {
+    /**
+     * @param $id
+     * @param array $columns
+     * @return CacheStub
+     */
+    public static function find($id, $columns = ['*'])
+    {
+        return new static();
+    }
+
     /**
      * @param  array  $options
      * @return bool
