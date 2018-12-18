@@ -6,9 +6,9 @@ use Cache;
 use Closure;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
 use More\Laravel\Cached\Models\CacheStub;
+use More\Laravel\Cached\Support\DecoratorFactory;
 
 /**
  * Trait CachesModel
@@ -54,6 +54,22 @@ trait CachesModel
     {
         return $this->model;
     }
+    /**
+     * @return string
+     */
+    public function getModelClass(): string
+    {
+        return $this->model_class;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getModelId(): ?int
+    {
+        return $this->model_id;
+    }
+
 
     /**
      * @param mixed ...$args
@@ -63,12 +79,16 @@ trait CachesModel
     {
         $model_accessor = $this->model_accessor;
 
-        if (is_object($args[0])) {
+        if (is_object($args[0]) || is_null($args[0])) {
             $this->$model_accessor = $this->model = $args[0];
+            if ($this->model) {
+                $this->setModelClass(get_class($this->model))
+                    ->setModelId($this->model->getKey());
+            }
         } else {
             $this->setModelClass(array_shift($args))
                 ->setModelId(array_first($args))
-                ->setModel(call_user_func_array([$this, 'findOrFail'], $args));
+                ->setModel(call_user_func_array([$this, 'find'], $args));
         }
 
         return $this;
@@ -171,13 +191,8 @@ trait CachesModel
      */
     public function find(...$args)
     {
-        return $this->cached(function() use ($args) {
-            $model = call_user_func_array([$this->model_class, 'find'], $args);
-
-            $this->cache($model, $empty_key_for_model = '');
-
-            return $model;
-        }, $empty_key_for_model = '');
+        array_unshift($args, __FUNCTION__);
+        return $this->findCached(...$args);
     }
 
     /**
@@ -186,15 +201,35 @@ trait CachesModel
      */
     public function findOrFail(...$args)
     {
-        return $this->cached(function() use ($args) {
-            if (empty($model = $this->find(...$args))) {
-                throw (new ModelNotFoundException)->setModel(
-                    get_class($this->model), array_first($args)
-                );
+        array_unshift($args, __FUNCTION__);
+        return $this->findCached(...$args);
+    }
+
+    /**
+     * @param string $find_method
+     * @param int $id
+     * @param string|bool|null $decorator
+     * @return mixed
+     */
+    public function findCached($find_method, $id, $decorator = null)
+    {
+        $model = $this->cached(function() use (&$args, $find_method, $id) {
+            $model = call_user_func_array([$this->model_class, $find_method], [$id]);
+
+            if ($model) {
+                $this->cache($model, $empty_key_for_model = '');
             }
 
             return $model;
         }, $empty_key_for_model = '');
+
+        if ($decorator === true) {
+            return $this->setModel($model);
+        } elseif ($decorator) {
+            return new $decorator($model);
+        }
+
+        return $model;
     }
 
     /**

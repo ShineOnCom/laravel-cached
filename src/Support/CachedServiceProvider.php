@@ -3,12 +3,14 @@
 namespace More\Laravel\Cached\Support;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\ServiceProvider;
+use More\Laravel\Cached\Traits\CachesModel;
 
 /**
  * Class CachedServiceProvider
  *
- * @mixin Builder
+ * @mixin CachesModel
  */
 class CachedServiceProvider extends ServiceProvider
 {
@@ -20,14 +22,36 @@ class CachedServiceProvider extends ServiceProvider
 
         $factory = new DecoratorFactory;
 
-        Builder::macro('decorate', function ($decorator = null) use ($factory) {
+        $decorate_macro = config('cached.macros.builder.decorate','decorate');
+
+        Builder::macro($decorate_macro, function ($decorator = null) use ($factory) {
            return $decorator
                ? new $decorator($this->getModel())
                : $factory($this->getModel());
         });
 
-        Builder::macro('findCached', function ($id, $columns = ['*']) use ($factory) {
-            return $factory(get_class($this->getModel()), $id)->getModel();
+        $find_macro = config('cached.macros.builder.cachedOrFail', 'cached');
+
+        Builder::macro($find_macro, function ($id, $decorator = null) use ($factory) {
+            return $decorator === true
+                ? new $factory(get_class($this->getModel()), $id)
+                : empty($decorator)
+                    ? $factory(get_class($this->getModel()), $id)->getModel()
+                    : new $decorator(get_class($this->getModel()), $id);
+        });
+
+        $find_or_fail_macro = config('cached.macros.builder.cachedOrFail', 'cachedOrFail');
+
+        Builder::macro($find_or_fail_macro, function ($id, $decorator = null) use ($factory) {
+            $decorated = $decorator === true || is_null($decorator)
+                ? new $factory(get_class($this->getModel()), $id)
+                : new $decorator(get_class($this->getModel()), $id);
+
+            if (empty($model = $decorated->getModel())) {
+                throw (new ModelNotFoundException($decorated->getModelClass(), $decorated->getModelId()));
+            }
+
+            return $decorator ? $decorated : $model;
         });
     }
 
