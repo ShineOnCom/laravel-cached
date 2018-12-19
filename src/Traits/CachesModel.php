@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use More\Laravel\Cached\Models\CacheStub;
-use More\Laravel\Cached\Support\DecoratorFactory;
 
 /**
  * Trait CachesModel
@@ -24,15 +23,6 @@ trait CachesModel
     public static $cache_times = [
         '*' => 1440
         // 'attribute_mutator' => 123 // minutes
-    ];
-
-    /**
-     * The `schedule` cron in App\Console\Kernel to replenish cache
-     *
-     * @var array $cache_follows
-     */
-    public static $cache_follows = [
-        //'*' => 'daily'
     ];
 
     /** @var string $model_class */
@@ -69,7 +59,6 @@ trait CachesModel
     {
         return $this->model_id;
     }
-
 
     /**
      * @param mixed ...$args
