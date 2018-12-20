@@ -27,7 +27,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "More\\Laravel\\Cached\\Support\\CachedServiceProvider"
+                "More\\Laravel\\Cached\\CachedServiceProvider"
             ]
         }
     }
