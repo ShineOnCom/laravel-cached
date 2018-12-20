@@ -2,6 +2,8 @@
 
 namespace More\Laravel\Cached\Support;
 
+use More\Laravel\Cached\CacheDecorator;
+
 /**
  * Class DecoratorFactory
  */
@@ -17,11 +19,9 @@ class DecoratorFactory
             ? get_class($args[0])
             : $args[0];
 
-        if (defined("{$class_name}::CACHE_DECORATOR")) {
-            $decorator = constant("{$class_name}::CACHE_DECORATOR");
-        } else {
-            $decorator = config('cached.decorator', CacheDecorator::class);
-        }
+        $decorator = defined("{$class_name}::CACHE_DECORATOR")
+            ? constant("{$class_name}::CACHE_DECORATOR")
+            : config('cached.decorator', CacheDecorator::class);
 
         return new $decorator(...$args);
     }
