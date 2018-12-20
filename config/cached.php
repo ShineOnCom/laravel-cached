@@ -46,7 +46,7 @@ return [
     'following' => [
         'job_chunks' => 100,
         'follows' => [
-            \App\Presenters\Admin\DashboardIndex::class,
+            // App\Decorators\YourDecoratorHere::class,
         ],
     ],
 ];
