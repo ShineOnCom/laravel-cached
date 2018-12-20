@@ -8,7 +8,7 @@ if (! function_exists('cached')) {
      * @param int $id
      * @param string|bool|null $decorator
      * @param string $find_method
-     * @return \Illuminate\Database\Eloquent\Model|\More\Laravel\Cached\Support\CacheDecorator
+     * @return \Illuminate\Database\Eloquent\Model|\More\Laravel\Cached\CacheDecorator
      */
     function cached(string $model_class, int $id, $decorator = null, $find_method = 'find')
     {
@@ -38,7 +38,7 @@ if (! function_exists('cachedOrFail')) {
      * @param string $model_class
      * @param int $id
      * @param null $decorator
-     * @return \Illuminate\Database\Eloquent\Model|\More\Laravel\Cached\Support\CacheDecorator
+     * @return \Illuminate\Database\Eloquent\Model|\More\Laravel\Cached\CacheDecorator
      */
     function cachedOrFail(string $model_class, int $id, $decorator = null)
     {

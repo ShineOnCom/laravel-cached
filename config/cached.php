@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'decorator' => \More\Laravel\Cached\Support\CacheDecorator::class,
+    'decorator' => \More\Laravel\Cached\CacheDecorator::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -30,6 +30,23 @@ return [
             'decorate' => 'decorate',
             'cached' => 'cached',
             'cachedOrFail' => 'cachedOrFail',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Following
+    |--------------------------------------------------------------------------
+    |
+    | If you want to automatically pre-cache some decorators on an interval,
+    | you can specify them here. Be sure to use this feature with care.
+    |
+    */
+
+    'following' => [
+        'job_chunks' => 100,
+        'follows' => [
+            \App\Presenters\Admin\DashboardIndex::class,
         ],
     ],
 ];

@@ -10,14 +10,14 @@ use Illuminate\Support\Str;
 use More\Laravel\Cached\Models\CacheStub;
 
 /**
- * Trait CachesModel
+ * Trait CacheModelDecorator
  *
  * Turn any class into a model cache decorator with a shared key system.
  *
  * @method __construct(Model|string $model, int $model_id = null)
  * @property Model $model
  */
-trait CachesModel
+trait CacheModelDecorator
 {
     /** @var array $cache_times */
     public static $cache_times = [

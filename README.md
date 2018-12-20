@@ -14,7 +14,7 @@ $user = cached(User::class, 1);                 // App\User
 
 // The default decorated class or 
 // CACHE_DECORATOR specified on model.
-$u = cached(User::class, 1, $decorate = true)   // More\Laravel\Cached\Support\CacheDecorator
+$u = cached(User::class, 1, $decorate = true)   // More\Laravel\Cached\CacheDecorator
 
 // A specific decorator to be returned
 $u = cached(User::class, 1, Dashboard::class);  // App\Presenters\Dashboard
@@ -35,10 +35,10 @@ $user = User::cached($id = 1);                  // App\User
 $user = User::cachedOrFail($id = 200000);       // throws ModelNotFoundException
 
 // Fail with exception or decorate.
-$u = User::cachedOrFail($id = 1)->decorate()    // More\Laravel\Cached\Support\CacheDecorator
+$u = User::cachedOrFail($id = 1)->decorate()    // More\Laravel\Cached\CacheDecorator
 
 // Param can be used when model may not be found
-$u = User::cached($id = 1, $decorate = true)    // More\Laravel\Cached\Support\CacheDecorator
+$u = User::cached($id = 1, $decorate = true)    // More\Laravel\Cached\CacheDecorator
 
 // A specific decorator to be returned
 $u = User::cachedOrFail($id = 1)                // App\Presenters\Dashboard
