@@ -140,13 +140,26 @@ trait CacheModelDecorator
     protected function cacheKey($suffix = '')
     {
         $model_accessor = $this->model_accessor;
+        $base_name = class_basename($this->model_class);
 
-        return class_basename($this->model_class)."/"
-            .implode("-", array_filter([
-                $this->model_id ?: $this->$model_accessor->getKey(),
-                $suffix,
-                $this->model_version_accessor
-            ]));
+        // Return cache key for the base model
+        if ($suffix == '') {
+            $version = defined($cache_version = $this->model_class . "::CACHE_VERSION")
+                ? constant($cache_version)
+                : 'NO_CACHE_VERSION_DEFINED';
+
+            return "$base_name/{$this->model_id}-$version";
+        }
+
+        // Return cache key for one of the base models properties
+        $tail = implode("-", array_filter([
+            $this->model_id ?: $this->$model_accessor->getKey(),
+            $suffix,                        // attribute, relation or method name
+            $this->model_version_accessor,  // by default, `updated_at`
+        ]));
+        $key = "$base_name/{$tail}";
+
+        return $key;
     }
 
     /**
