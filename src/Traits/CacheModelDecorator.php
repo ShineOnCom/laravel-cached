@@ -8,13 +8,18 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use More\Laravel\Cached\Models\CacheStub;
+use More\Laravel\Cached\Support\CachedInterface;
+use More\Laravel\Cached\Support\Util;
 
 /**
  * Trait CacheModelDecorator
  *
- * Turn any class into a model cache decorator with a shared key system.
+ * Consider extending CacheDecorator to create your own decorators. If that is
+ * not possible, you can use the traits, and make sure your __construct()
+ * leverages the setModel(...) method.
  *
  * @method __construct(Model|string $model, int $model_id = null)
+ * @mixin CachedInterface
  * @property Model $model
  */
 trait CacheModelDecorator
@@ -58,6 +63,12 @@ trait CacheModelDecorator
     public function getModelId(): ?int
     {
         return $this->model_id;
+    }
+
+    /** @return string */
+    public function getModelVersionAccessor()
+    {
+        return $this->model_version_accessor;
     }
 
     /**
@@ -139,27 +150,7 @@ trait CacheModelDecorator
      */
     protected function cacheKey($suffix = '')
     {
-        $model_accessor = $this->model_accessor;
-        $base_name = class_basename($this->model_class);
-
-        // Return cache key for the base model
-        if ($suffix == '') {
-            $version = defined($cache_version = $this->model_class . "::CACHE_VERSION")
-                ? constant($cache_version)
-                : 'NO_CACHE_VERSION_DEFINED';
-
-            return "$base_name/{$this->model_id}-$version";
-        }
-
-        // Return cache key for one of the base models properties
-        $tail = implode("-", array_filter([
-            $this->model_id ?: $this->$model_accessor->getKey(),
-            $suffix,                        // attribute, relation or method name
-            $this->model_version_accessor,  // by default, `updated_at`
-        ]));
-        $key = "$base_name/{$tail}";
-
-        return $key;
+        return Util::cacheKey($this, $suffix);
     }
 
     /**
@@ -235,13 +226,27 @@ trait CacheModelDecorator
     }
 
     /**
+     * @param bool $touch_self
+     * @param bool $computed
+     * @param bool $tree
      * @return $this
      */
-    public function forget()
+    public function forget($touch_self = false, $computed = false, $tree = false)
     {
-        $this->model->touch();
+        Cache::forget($this->cacheKey());
 
-        $this->forgetComputed();
+        if ($touch_self) {
+            $this->getModel()->touch();
+        }
+
+        if ($computed) {
+            $args = is_array($computed) ? $computed : [];
+            $this->forgetComputed(...$args);
+        }
+
+        if ($tree) {
+            $this->forgetTree();
+        }
 
         return $this;
     }
@@ -266,22 +271,35 @@ trait CacheModelDecorator
     }
 
     /**
+     * Use with care.
+     *
+     * Make sure your models only touch relations downstream or upstream.
+     *
+     * Avoid recursive touching!
+     *
+     * Make sure your relations don't have thousands of models.
+     *
+     * @param bool $touch
      * @return $this
      */
-    public function forgetTree()
+    public function forgetTree($touch = false)
     {
-        $this->forget();
+        $decorate = config('cached.macros.builder.decorate');
 
-        foreach ($this->model->touches as $relation) {
-            $this->$relation()->touch();
+        foreach ($this->getModel()->touches as $relation) {
+            $related = $this->getModel()->$relation;
 
-            if ($this->$relation instanceof self) {
-                $this->$relation->fireModelEvent('saved', false);
-
-                (new static($this->$relation))->forgetTree();
-            } elseif ($this->$relation instanceof Collection) {
-                $this->$relation->each(function (Model $relation) {
-                    (new static($this->$relation))->forgetTree();
+            if (is_a($related, get_class($this->getModel()))) {
+                /** @var Model $related */
+                $related->fireModelEvent('saved', false);
+                $related->$decorate(get_class($this))
+                    ->forget($touch, $computed = true, $tree = false)
+                    ->forgetTree($touch);
+            } elseif ($related instanceof Collection) {
+                $related->each(function (Model $related_model) use ($decorate, $touch) {
+                    $related_model->$decorate()
+                        ->forget($touch, $computed = true, $tree = false)
+                        ->forgetTree($touch);
                 });
             }
         }

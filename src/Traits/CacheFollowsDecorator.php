@@ -9,6 +9,10 @@ use Illuminate\Support\Str;
 
 /**
  * Trait CacheFollowsDecorator
+ *
+ * Consider extending CacheDecorator to create your own decorators. If that is
+ * not possible, you can use the traits, and make sure your __construct()
+ * leverages the setModel(...) method.
  */
 trait CacheFollowsDecorator
 {

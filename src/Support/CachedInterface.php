@@ -7,15 +7,21 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Interface CacheMayFollow
+ * Interface CachedInterface
  */
-interface CacheMayFollowInterface
+interface CachedInterface
 {
     /** @return Model|null */
     public function getModel();
 
     /** @return string */
     public function getModelClass();
+
+    /** @return int */
+    public function getModelId();
+
+    /** @return string */
+    public function getModelVersionAccessor();
 
     /**
      * Query the models we wish to follow.

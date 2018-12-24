@@ -8,16 +8,22 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Str;
 use JsonSerializable;
-use More\Laravel\Cached\Support\CacheMayFollowInterface;
+use More\Laravel\Cached\Support\CachedInterface;
 use More\Laravel\Cached\Traits\CacheFollowsDecorator;
 use More\Laravel\Cached\Traits\CacheModelDecorator;
 
 /**
  * Class CacheDecorator
  *
+ * Presenter pattern introduced by David Hempfield.
+ *
  * @see Presenter by David Hempfield (hemp/presenter)
+ *
+ * @method followInCache()
+ * @method static cacheSchedule(\Illuminate\Console\Scheduling\Schedule &$schedule)
+ * @method static cacheFollows()
  */
-class CacheDecorator implements Jsonable, JsonSerializable, Arrayable, ArrayAccess, CacheMayFollowInterface
+class CacheDecorator implements Jsonable, JsonSerializable, Arrayable, ArrayAccess, CachedInterface
 {
     use CacheModelDecorator, CacheFollowsDecorator;
 
@@ -264,6 +270,17 @@ class CacheDecorator implements Jsonable, JsonSerializable, Arrayable, ArrayAcce
     protected function mutateAttribute($key)
     {
         return $this->{'get' . Str::studly($key) . 'Attribute'}();
+    }
+
+    /**
+     * Determine if a get mutator exists for an attribute.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function hasGetMutator($key)
+    {
+        return method_exists($this, 'get'.Str::studly($key).'Attribute');
     }
 
     /**
