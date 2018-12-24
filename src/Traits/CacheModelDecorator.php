@@ -79,11 +79,13 @@ trait CacheModelDecorator
     {
         $model_accessor = $this->model_accessor;
 
-        if (is_object($args[0]) || is_null($args[0])) {
-            $this->$model_accessor = $this->model = $args[0];
+        $model = $args[0] ?? null;
+
+        if (empty($model) || is_object($model)) {
+            $this->$model_accessor = $this->model = $model;
             if ($this->model) {
-                $this->setModelClass(get_class($this->model))
-                    ->setModelId($this->model->getKey());
+                $this->setModelClass(get_class($model))
+                    ->setModelId($model->getKey());
             }
         } else {
             $this->setModelClass(array_shift($args))

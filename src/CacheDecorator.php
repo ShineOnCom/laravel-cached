@@ -174,6 +174,10 @@ class CacheDecorator implements Jsonable, JsonSerializable, Arrayable, ArrayAcce
      */
     public function toArray()
     {
+        if (empty($this->model)) {
+            return [];
+        }
+
         $mutatedAttributes = $this->mutatorsToArray();
 
         $all = array_merge($this->model->toArray(), $mutatedAttributes);
