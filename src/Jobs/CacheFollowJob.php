@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
 use More\Laravel\Cached\CacheDecorator;
+use More\Laravel\Cached\Support\CachedInterface;
 
 /**
  * Class CacheFollowJob
@@ -49,7 +50,7 @@ class CacheFollowJob implements ShouldQueue
         $model = $decorator->getModelClass();
 
         foreach ($this->ids as $id) {
-            /** @var CacheMayFollow $decorated */
+            /** @var CachedInterface $decorated */
             $decorated = cached($model, $id, $decorator);
 
             $decorated->followInCache();

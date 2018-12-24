@@ -5,7 +5,7 @@ namespace More\Laravel\Cached\Console;
 use BadMethodCallException;
 use Illuminate\Console\Command;
 use More\Laravel\Cached\Jobs\CacheFollowJob;
-use More\Laravel\Cached\Support\CacheMayFollowInterface as CacheInterface;
+use More\Laravel\Cached\Support\CachedInterface as CacheInterface;
 use More\Laravel\Cached\Models\CacheStub;
 use More\Laravel\Cached\Traits\CacheModelDecorator;
 

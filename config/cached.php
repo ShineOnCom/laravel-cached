@@ -49,4 +49,20 @@ return [
             // App\Decorators\YourDecoratorHere::class,
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forget invalidated
+    |--------------------------------------------------------------------------
+    |
+    | When a base model updates, you can automagically clear cache entries.
+    |
+    */
+
+    'invalidation' => [
+        'forget_self' => false,
+        'forget_computed' => false,
+        // DO NOT COMBINE WITH CacheDecorator::forgetTree($touch = true)
+        'forget_tree' => false,
+    ]
 ];
