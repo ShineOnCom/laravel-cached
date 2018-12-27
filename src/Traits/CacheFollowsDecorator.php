@@ -75,7 +75,9 @@ trait CacheFollowsDecorator
             ? constant(get_called_class().'::CACHE_FOLLOWS')
             : 'daily';
 
-        $schedule->command('cache:follow')->$interval();
+        $decorator = get_called_class();
+
+        $schedule->command("cache:follow \"{$decorator}\"")->$interval();
 
         return $schedule;
     }
