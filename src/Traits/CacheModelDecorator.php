@@ -108,10 +108,10 @@ trait CacheModelDecorator
     }
 
     /**
-     * @param int|null $model_id
+     * @param int|string|null $model_id
      * @return $this
      */
-    public function setModelId(?int $model_id)
+    public function setModelId($model_id)
     {
         $this->model_id = $model_id;
 
