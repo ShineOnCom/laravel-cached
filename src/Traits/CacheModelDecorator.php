@@ -58,9 +58,9 @@ trait CacheModelDecorator
     }
 
     /**
-     * @return int|null
+     * @return int|string|null
      */
-    public function getModelId(): ?int
+    public function getModelId()
     {
         return $this->model_id;
     }
