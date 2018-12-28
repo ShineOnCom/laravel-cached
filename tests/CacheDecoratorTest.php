@@ -19,4 +19,14 @@ class CacheDecoratorTest extends TestCase
 
         $this->assertEquals('some_string', $cache_decorator->getModelId());
     }
+
+    /** @test */
+    public function it_set_and_gets_model_id_of_int_type()
+    {
+        $model = new CacheStub();
+        $cache_decorator = new CacheDecorator($model);
+        $cache_decorator->setModelId(123);
+
+        $this->assertEquals(123, $cache_decorator->getModelId());
+    }
 }
