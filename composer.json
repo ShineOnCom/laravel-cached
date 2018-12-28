@@ -27,6 +27,14 @@
     "require-dev": {
         "phpunit/phpunit" : "^5.7|6.2|^7.0"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "More\\Laravel\\Cached\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
     "extra": {
         "laravel": {
             "providers": [
