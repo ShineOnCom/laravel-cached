@@ -126,9 +126,9 @@ trait CacheModelDecorator
     protected function cache($value, $suffix = '')
     {
         $key = $this->cacheKey($suffix);
-        $seconds = $this->cacheSeconds($suffix);
+        $minutes = $this->cacheMinutes($suffix);
 
-        Cache::put($key, $value, $seconds);
+        Cache::put($key, $value, $minutes * 60);
 
         return $this;
     }
@@ -142,7 +142,7 @@ trait CacheModelDecorator
     {
         return Cache::remember(
             $this->cacheKey($suffix),
-            $this->cacheSeconds(),
+            $this->cacheMinutes() * 60,
             $data);
     }
 
@@ -159,13 +159,13 @@ trait CacheModelDecorator
      * @param string $suffix
      * @return int|mixed
      */
-    protected function cacheSeconds($suffix = '')
+    protected function cacheMinutes($suffix = '')
     {
         return isset(static::$cache_times[$suffix])
             ? static::$cache_times[$suffix]
             : defined("{$this->model_class}::CACHE_TIME")
                 ? constant("{$this->model_class}::CACHE_TIME")
-                : 1440 * 60;
+                : 1440;
     }
 
     /**
