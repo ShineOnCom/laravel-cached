@@ -4,7 +4,9 @@ namespace More\Laravel\Cached\Support;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use More\Laravel\Cached\CacheDecorator;
+use More\Laravel\Cached\Models\CacheStub;
 
 /**
  * Class Util
@@ -53,6 +55,14 @@ class Util
      */
     public static function cacheKey($decorator, $suffix = '')
     {
+        if ($decorator->getModelClass() == CacheStub::class) {
+            $class = get_class($decorator);
+            $prefix = defined("$class::CACHE_PREFIX")
+                ? $decorator::CACHE_PREFIX
+                : Str::slug(str_replace('\\', '-', $class));
+            return "$prefix-$suffix";
+        }
+
         $base = static::cacheKeyBaseModel($decorator->getModelClass(), $decorator->getModelId());
 
         if ($suffix == '') {

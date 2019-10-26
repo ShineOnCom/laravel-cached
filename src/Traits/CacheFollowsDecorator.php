@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use More\Laravel\Cached\Models\CacheStub;
 
 /**
  * Trait CacheFollowsDecorator
@@ -46,9 +47,8 @@ trait CacheFollowsDecorator
     {
         $props = collect(static::$cache_follow_props);
 
-        if ($props->contains('*')) {
+        if ($props->contains('*') || $this->getModelClass() == CacheStub::class) {
             $this->toArray();
-
             return $this;
         }
 

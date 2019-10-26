@@ -152,7 +152,9 @@ trait CacheModelDecorator
      */
     protected function cacheKey($suffix = '')
     {
-        return Util::cacheKey($this, $suffix);
+        $key = Util::cacheKey($this, $suffix);
+
+        return $key;
     }
 
     /**
@@ -235,6 +237,15 @@ trait CacheModelDecorator
      */
     public function forget($touch_self = false, $computed = false, $tree = false)
     {
+        if ($this->getModelClass() == CacheStub::class) {
+            collect($this->getMutatedAttributes())
+                ->each(function($attribute) {
+                    Cache::forget(Util::cacheKey($this, $attribute));
+                });
+
+            return $this;
+        }
+
         Cache::forget($this->cacheKey());
 
         if ($touch_self) {

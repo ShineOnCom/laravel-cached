@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Str;
 use JsonSerializable;
+use More\Laravel\Cached\Models\CacheStub;
 use More\Laravel\Cached\Support\CachedInterface;
 use More\Laravel\Cached\Traits\CacheFollowsDecorator;
 use More\Laravel\Cached\Traits\CacheModelDecorator;
@@ -174,6 +175,10 @@ class CacheDecorator implements Jsonable, JsonSerializable, Arrayable, ArrayAcce
      */
     public function toArray()
     {
+        if ($this->model_class == CacheStub::class) {
+            return $this->mutatorsToArray();
+        }
+
         if (empty($this->model)) {
             return [];
         }

@@ -37,7 +37,7 @@ class CacheFollowCommand extends Command
 
         // Are we decorating a fake model?
         if ($instance->getModelClass() == CacheStub::class) {
-            $instance->followInCache();
+            CacheStub::followInCache($decorator);
 
             return $this;
         }
