@@ -23,14 +23,18 @@ class CacheStub extends Model
 
     /**
      * @param $decorator
+     * @return CacheDecorator
      */
     public static function followInCache($decorator)
     {
+        static::forget($decorator);
+
         return (new static())->decorate($decorator)->followInCache();
     }
 
     /**
      * @param $decorator
+     * @return CacheDecorator
      */
     public static function forget($decorator)
     {
