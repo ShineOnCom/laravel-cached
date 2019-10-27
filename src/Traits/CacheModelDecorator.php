@@ -165,9 +165,11 @@ trait CacheModelDecorator
     {
         return isset(static::$cache_times[$suffix])
             ? static::$cache_times[$suffix]
-            : defined("{$this->model_class}::CACHE_TIME")
-                ? constant("{$this->model_class}::CACHE_TIME")
-                : 1440;
+            : (defined(get_class($this)."::CACHE_TIME")
+                ? constant(get_class($this)."::CACHE_TIME")
+                : (defined("{$this->model_class}::CACHE_TIME")
+                    ? constant("{$this->model_class}::CACHE_TIME")
+                    : 1440));
     }
 
     /**
