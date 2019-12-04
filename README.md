@@ -50,7 +50,7 @@ $u = User::cached($id = 1, Dashboard::class);   // App\Presenters\Dashboard
 
 ## More on Decorators
 
-> A basic `CacheDecator` is included by default. But you can publish the config to switch the global default. 
+> A basic `CacheDecorator` is included by default. But you can publish the config to switch the global default. 
 
 ### Default `CacheDecorator`
 
@@ -81,11 +81,9 @@ $user->decorate();                              // \App\Metrics\UserMetrics
 
 This pattern plays very nice with `hemp/presenter`. Just extend his `Presenter` class, add the trait included, and overload construct.
 
-After some more testing, I'll probably add `__call` and `__callStatic` and maybe some other goodies to ease passing around decorators to various Laravel utilities.
-
 Additionally, a overloading route-model binding with a drop-in replacement would be cool.
 
-More testing is needed.
+More testing and discovery with nested cache forgetting, and cache pre-warming.
 
 ## Composer
 
