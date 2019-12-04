@@ -49,6 +49,7 @@ trait CacheModelDecorator
     {
         return $this->model;
     }
+    
     /**
      * @return string
      */
@@ -159,17 +160,46 @@ trait CacheModelDecorator
 
     /**
      * @param string $suffix
+     * @return string
+     */
+    private function cacheHas($suffix = '')
+    {
+        $key = Util::cacheKey($this, $suffix);
+
+        return Cache::has($suffix);
+    }
+
+    /**
+     * @param string $suffix
+     * @param mixed $value
+     * @return string
+     */
+    private function cachePut($suffix, $value, $ttl)
+    {
+        $key = Util::cacheKey($this, $suffix);
+
+        return Cache::put($suffix, $value, $ttl);
+    }
+
+    /**
+     * @param string $suffix
      * @return int|mixed
      */
     protected function cacheMinutes($suffix = '')
     {
-        return isset(static::$cache_times[$suffix])
-            ? static::$cache_times[$suffix]
-            : (defined(get_class($this)."::CACHE_TIME")
-                ? constant(get_class($this)."::CACHE_TIME")
-                : (defined("{$this->model_class}::CACHE_TIME")
-                    ? constant("{$this->model_class}::CACHE_TIME")
-                    : 1440));
+        if (isset(static::$cache_times[$suffix])) {
+            return static::$cache_times[$suffix];
+        }
+
+        if (defined(get_class($this)."::CACHE_TIME")) {
+            return constant(get_class($this)."::CACHE_TIME");
+        }
+
+        if (defined("{$this->model_class}::CACHE_TIME")) {
+            return constant("{$this->model_class}::CACHE_TIME");
+        }
+
+        return 86400;
     }
 
     /**

@@ -15,7 +15,7 @@ use More\Laravel\Cached\Traits\CacheModelDecorator;
 class CacheFollowCommand extends Command
 {
     /** @var string $signature */
-    protected $signature = 'cache:follow {decorator} {--ids=any} {--now}';
+    protected $signature = 'cache:follow {decorator} {--ids=any} {--now} {--force}';
 
     /** @var string $description */
     protected $description = 'Cache database intensive presentation data before it is used.';
@@ -37,7 +37,7 @@ class CacheFollowCommand extends Command
 
         // Are we decorating a fake model?
         if ($instance->getModelClass() == CacheStub::class) {
-            CacheStub::followInCache($decorator);
+            CacheStub::followInCache($decorator, $this->option('force'));
 
             return $this;
         }

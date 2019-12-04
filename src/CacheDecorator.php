@@ -20,7 +20,7 @@ use More\Laravel\Cached\Traits\CacheModelDecorator;
  *
  * @see Presenter by David Hempfield (hemp/presenter)
  *
- * @method followInCache()
+ * @method followInCache($force = false)
  * @method static cacheSchedule(\Illuminate\Console\Scheduling\Schedule &$schedule)
  * @method static cacheFollows()
  */
@@ -237,7 +237,7 @@ class CacheDecorator implements Jsonable, JsonSerializable, Arrayable, ArrayAcce
     {
         $class = static::class;
 
-        if (!isset(static::$mutatorCache[$class])) {
+        if (! isset(static::$mutatorCache[$class])) {
             static::cacheMutatedAttributes($class);
         }
 

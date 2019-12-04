@@ -2,7 +2,6 @@
 
 namespace More\Laravel\Cached\Models;
 
-use App\Presenters\Admin\DashboardIndex;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use More\Laravel\Cached\CacheDecorator;
@@ -18,18 +17,23 @@ class CacheStub extends Model
      */
     public static function make($decorator)
     {
-        return (new CacheStub())->decorate(DashboardIndex::class);
+        return (new CacheStub())->decorate($decorator);
     }
 
     /**
+     * By default, we only add values to cache that are not already there.
+     *
+     * Use force to refresh cache value.
+     *
      * @param $decorator
+     * @param $force
      * @return CacheDecorator
      */
-    public static function followInCache($decorator)
+    public static function followInCache($decorator, $force = false)
     {
         static::forget($decorator);
 
-        return (new static())->decorate($decorator)->followInCache();
+        return (new static())->decorate($decorator)->followInCache($force);
     }
 
     /**

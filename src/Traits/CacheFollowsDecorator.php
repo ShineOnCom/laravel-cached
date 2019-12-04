@@ -5,6 +5,7 @@ namespace More\Laravel\Cached\Traits;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use More\Laravel\Cached\Models\CacheStub;
 
@@ -14,6 +15,8 @@ use More\Laravel\Cached\Models\CacheStub;
  * Consider extending CacheDecorator to create your own decorators. If that is
  * not possible, you can use the traits, and make sure your __construct()
  * leverages the setModel(...) method.
+ *
+ * @mixin CacheModelDecorator
  */
 trait CacheFollowsDecorator
 {
@@ -41,13 +44,30 @@ trait CacheFollowsDecorator
     }
 
     /**
+     * @param bool $force
      * @return $this
      */
-    public function followInCache()
+    public function followInCache($force = true)
     {
+        if ($this->getModelClass() == CacheStub::class) {
+            $attributes = $this->getMutatedAttributes();
+
+            foreach ($attributes as $attribute) {
+                if (! $force && $this->cacheHas($attribute)) {
+                    continue;
+                }
+
+                $this->cachePut(
+                    $suffix = $attribute,
+                    $value = $this->getModel()->$attribute,
+                    $ttl = $this->cacheMinutes($suffix)
+                );
+            }
+        }
+
         $props = collect(static::$cache_follow_props);
 
-        if ($props->contains('*') || $this->getModelClass() == CacheStub::class) {
+        if ($props->contains('*')) {
             $this->toArray();
             return $this;
         }
