@@ -86,18 +86,29 @@ trait CacheFollowsDecorator
     }
 
     /**
-     * @param Schedule $schedule
-     * @return Schedule
+     * @return string
      */
-    public static function cacheSchedule(Schedule &$schedule)
+    protected static function cacheFollowsInterval()
     {
-        $interval = defined(get_called_class().'::CACHE_FOLLOWS')
+        return defined(get_called_class().'::CACHE_FOLLOWS')
             ? constant(get_called_class().'::CACHE_FOLLOWS')
             : 'daily';
+    }
+
+    /**
+     * @param Schedule $schedule
+     * @param bool $force
+     * @return Schedule
+     */
+    public static function cacheSchedule(Schedule &$schedule, $force = true)
+    {
+        $interval = static::cacheFollowsInterval();
 
         $decorator = get_called_class();
 
-        $schedule->command("cache:follow \"{$decorator}\"")->$interval();
+        $force = $force ? ' --force' : '';
+
+        $schedule->command("cache:follow \"{$decorator}\"{$force}")->$interval();
 
         return $schedule;
     }

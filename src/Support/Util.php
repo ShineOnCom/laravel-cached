@@ -20,7 +20,7 @@ class Util
     {
         if (count($cache_follows = config('cached.following.follows', []))) {
             foreach ($cache_follows as $decorator) {
-                $decorator::cacheSchedule($schedule);
+                $decorator::cacheSchedule($schedule, config('cached.following.force'));
             }
         }
     }
