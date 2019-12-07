@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Log;
 use More\Laravel\Cached\Models\CacheStub;
 use More\Laravel\Cached\Support\CachedInterface;
 use More\Laravel\Cached\Support\Util;
@@ -141,10 +142,15 @@ trait CacheModelDecorator
      */
     protected function cached(Closure $data, $suffix)
     {
-        return Cache::remember(
-            $this->cacheKey($suffix),
-            $this->cacheMinutes() * 60,
-            $data);
+        $key = $this->cacheKey($suffix);
+        $ttl = $this->cacheMinutes() * 60;
+
+        if (config('cached.debug.log_misses') && ! Cache::has($key)) {
+            $class = static::class;
+            Log::debug('cached_debug_miss', compact('class', 'suffix', 'key', 'ttl'));
+        }
+
+        return Cache::remember($key, $ttl, $data);
     }
 
     /**
