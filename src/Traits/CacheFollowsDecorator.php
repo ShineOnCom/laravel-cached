@@ -63,6 +63,8 @@ trait CacheFollowsDecorator
                     $ttl = $this->cacheMinutes($suffix)
                 );
             }
+
+            return $this;
         }
 
         $props = collect(static::$cache_follow_props);
