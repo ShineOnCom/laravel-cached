@@ -21,7 +21,7 @@ class CacheFollowCommand extends Command
     protected $description = 'Cache database intensive presentation data before it is used.';
 
     /**
-     * @return $this
+     * @return int
      */
     public function handle()
     {
@@ -39,7 +39,7 @@ class CacheFollowCommand extends Command
         if ($instance->getModelClass() == CacheStub::class) {
             CacheStub::followInCache($decorator, $this->option('force'));
 
-            return $this;
+            return 0;
         }
 
         $now = $this->option('now');
@@ -55,7 +55,7 @@ class CacheFollowCommand extends Command
                 $now ? dispatch_now($job) : dispatch($job);
             });
 
-        return $this;
+        return 0;
     }
 
     /**
